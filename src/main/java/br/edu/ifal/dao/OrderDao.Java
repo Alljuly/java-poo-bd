@@ -13,7 +13,7 @@ import java.util.List;
 public class OrderDao {
 
     List<Order> getAllOrders(){
-        String sql = "SELECT * FROM Order;";
+        String sql = "SELECT * FROM Pedido;";
 
         List<Order> orders = new ArrayList<>();
         try {
@@ -23,11 +23,11 @@ public class OrderDao {
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 String id = rs.getString("ID");
-                String name = rs.getString("CPF_CLIENTE_FK");
+                String cpf_client = rs.getString("CPF_CLIENTE_FK");
                 String cpf_employee = rs.getString("CPF_FUNCIONARIO_FK");
                 double value = Double.ParseDouble(rs.getString("VALOR_TOTAL"));
 
-                Order Order = new Order(cpf, name, cpf_employee, value);
+                Order Order = new Order(id, cpf_client, cpf_employee, value);
                 lista.add(Order);
             }
 
@@ -42,7 +42,7 @@ public class OrderDao {
     }
 
     Order getOrderById(String id){
-        String sql = "SELECT * FROM Order o WHERE o.id = ?;";
+        String sql = "SELECT * FROM Pedido p WHERE p.id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
@@ -69,16 +69,16 @@ public class OrderDao {
     }
 
     void addOrder(Order order){
-         String sql = "INSERT INTO Order VALUES (?,?,?,?);";
+         String sql = "INSERT INTO Pedido VALUES (?,?,?,?);";
 
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, order.getID());
-            pst.setString(2, order.getCPFEmployee());
-            pst.setString(3, order.getCPFClient());
-            pst.setString(4, order.getValue());
+            pst.setString(1, order.getId());
+            pst.setString(2, order.getClientCpf());
+            pst.setString(3, order.getEmployeeCpf());
+            pst.setString(4, order.getTotalValue());
 
             pst.execute();
 
@@ -91,16 +91,16 @@ public class OrderDao {
     }
     
     int updateOrder(Order order){
-        String sql = "UPDATE Order SET CPF = ?, NOME = ?, ENDERECO = ?, TELEFONE = ? WHERE CPF = ?;";
+        String sql = "UPDATE Pedido SET ID = ?, CPF_CLIENTE_FK = ?, CPF_FUNCIONARIO_FK = ?, VALOR_TOTAL = ? WHERE id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, order.getCpf());
-            pst.setString(2, order.getNome());
-            pst.setString(3, order.getEndereco());
-            pst.setString(4, order.getTelefone());
-            pst.setString(5, order.getCpf());
+            pst.setString(1, order.getId());
+            pst.setString(2, order.getClientCpf());
+            pst.setString(3, order.getEmployeeCpf());
+            pst.setString(4, order.getTotalValue());
+            pst.setString(1, order.getId());
 
            return pst.executeUpdate();
 
@@ -114,7 +114,7 @@ public class OrderDao {
     }
     
     int deleteOrder(String id){
-        String sql = "Delete from Order WHERE CPF = ?;";
+        String sql = "Delete from Pedido WHERE id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);

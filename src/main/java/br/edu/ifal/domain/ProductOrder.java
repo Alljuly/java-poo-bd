@@ -5,7 +5,7 @@ public class ProductOrder{
     private int quantity;
     private double value;
 
-    public ItemPedido(int id, int orderId, int productId, int quantity, double value) {
+    public ProductOrder(int id, int orderId, int productId, int quantity, double value) {
         this.id = id;
         this.orderId = orderId;
         this.productId = productId;

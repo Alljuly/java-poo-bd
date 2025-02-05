@@ -4,14 +4,13 @@ public class Order{
     private String employeeCpf;
     private double totalValue;
 
-    public Pedido(int id, String clientCpf, String employeeCpf, double totalValue) {
+    public Order(int id, String clientCpf, String employeeCpf, double totalValue) {
         this.id = id;
         this.clientCpf = clientCpf;
         this.employeeCpf = employeeCpf;
         this.totalValue = totalValue;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

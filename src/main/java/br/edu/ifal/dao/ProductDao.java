@@ -1,7 +1,7 @@
 package br.edu.ifal.dao;
 
 import br.edu.ifal.db.ConnectionHelper;
-import br.edu.ifal.domain.Order;
+import br.edu.ifal.domain.Product;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,27 +10,25 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * 
- public class OrderDao {
+ public class ProductDao {
     
- List<Order> getAllOrders(){
-    String sql = "SELECT * FROM Order;";
+ List<Product> getAllOrders(){
+    String sql = "SELECT * FROM Produto;";
     
-    List<Order> orders = new ArrayList<>();
+    List<Product> products = new ArrayList<>();
     try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
             
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                String id = rs.getString("ID");
-                String name = rs.getString("CPF_CLIENTE_FK");
-                String cpf_employee = rs.getString("CPF_FUNCIONARIO_FK");
-                double value = Double.ParseDouble(rs.getString("VALOR_TOTAL"));
+                int ID         = rs.getString("ID");
+                String NOME       = rs.getString("NOME");
+                double VALOR_UNIT = rs.getString("VALOR_UNIT");
+                int QUANTIDADE = Double.ParseDouble(rs.getString("QUANTIDADE"));
                 
-                Order Order = new Order(cpf, name, cpf_employee, value);
-                lista.add(Order);
+                Product product = new Product(ID, NOME, VALOR_UNIT, QUANTIDADE);
+                products.add(product);
             }
             
             pst.close();
@@ -40,11 +38,11 @@ import java.util.List;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return orders;
+        return products;
     }
     
-    Order getOrderById(String id){
-        String sql = "SELECT * FROM Order o WHERE o.id = ?;";
+    Order getProductById(String id){
+        String sql = "SELECT * FROM Produto p WHERE p.id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
@@ -54,11 +52,11 @@ import java.util.List;
             ResultSet rs = pst.executeQuery();
             
             if(rs.next()){
-                return new Order(
+                return new Product(
                     rs.getString("ID"),
-                    rs.getString("CPF_CLIENTE_FK"),
-                    rs.getString("CPF_FUNCIONARIO_FK"),
-                    rs.getString("VALOR_TOTAL")
+                    rs.getString("NOME"),
+                    rs.getString("VALOR_UNIT"),
+                    rs.getString("QUANTIDADE")
                     );
             }
             pst.close();
@@ -70,17 +68,17 @@ import java.util.List;
         return null;
     }
     
-    void addOrder(Order order){
-         String sql = "INSERT INTO Order VALUES (?,?,?,?);";
+    void addProduct(Product product){
+         String sql = "INSERT INTO Produto VALUES (?,?,?,?);";
 
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
             
-            pst.setString(1, order.getID());
-            pst.setString(2, order.getCPFEmployee());
-            pst.setString(3, order.getCPFClient());
-            pst.setString(4, order.getValue());
+            pst.setString(1, product.getID());
+            pst.setString(2, product.getCPFEmployee());
+            pst.setString(3, product.getCPFClient());
+            pst.setString(4, product.getValue());
             
             pst.execute();
             
@@ -92,17 +90,17 @@ import java.util.List;
         }
     }
     
-    int updateOrder(Order order){
-        String sql = "UPDATE Order SET CPF = ?, NOME = ?, ENDERECO = ?, TELEFONE = ? WHERE CPF = ?;";
+    int updateProduct(Product product){
+        String sql = "UPDATE Produto SET ID = ?, NOME = ?, VALOR_UNIT = ?, QUANTIDADE = ? WHERE ID = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
             
-            pst.setString(1, order.getCpf());
-            pst.setString(2, order.getNome());
-            pst.setString(3, order.getEndereco());
-            pst.setString(4, order.getTelefone());
-            pst.setString(5, order.getCpf());
+            pst.setString(1, product.getID());
+            pst.setString(2, product.getCPFEmployee());
+            pst.setString(3, product.getCPFClient());
+            pst.setString(4, product.getValue());
+            pst.setString(5, product.getID());
             
             return pst.executeUpdate();
             
@@ -115,8 +113,8 @@ import java.util.List;
         
     }
     
-    int deleteOrder(String id){
-        String sql = "Delete from Order WHERE CPF = ?;";
+    int deleteProduct(String id){
+        String sql = "Delete from Produto WHERE id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
@@ -134,4 +132,3 @@ import java.util.List;
     }
 }
 
-*/
