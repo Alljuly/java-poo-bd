@@ -23,11 +23,11 @@ public class Main {
         ProductOrderDao productOrderDao = new ProductOrderDao();
 
         try {
-            TestClient testeClient = new TesteClient(clientDao);
-            TestEmployee testeEmployee = new TesteClient(employeeDao);
-            TestProduct testeProduct = new TesteClient(productDao);
-            TestOrder testeOrder = new TesteClient(orderDao);
-            TestProductOrder testeProductOrder = new TesteClient(productOrderDao);
+            TestClient testeClient = new TestClient(clientDao);
+            TestEmployee testeEmployee = new TestClient(employeeDao);
+            TestProduct testeProduct = new TestClient(productDao);
+            TestOrder testeOrder = new TestClient(orderDao);
+            TestProductOrder testeProductOrder = new TestClient(productOrderDao);
 
             testeClient.teste();
             testeEmployee.teste();

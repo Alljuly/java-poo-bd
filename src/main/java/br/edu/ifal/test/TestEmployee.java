@@ -1,31 +1,33 @@
-public class TesteClient{
-    ClientDao clientDao ;
-    public TesteClient(ClientDao c){
-        this.clientDao = c;
+import src.main.java.br.edu.ifal.dao.EmployeeDao;
+
+public class TestEmployee{
+    EmployeeDao employeeDao ;
+    public TesteEmployee(EmplyeeDao e){
+        this.employeeDao = e;
     }
 
     void teste(){
-        Client newClient = new Client("12312312315",
+        Employee newEmployee = new Employee("12312312315",
                      "José da Silva",
                      "Endereco",
                      "123451231");
 
-            clientDao.addClient(newClient);
+            employeeDao.addEmployee(newEmployee);
 
-            List<Client> listClients = clientDao.getAllClients();
-            for (Client c : listClients) {
+            List<Employee> listEmployees = employeeDao.getAllEmployees();
+            for (Employee c : listEmployees) {
                 System.out.println(c);
             }
 
-            Client update = new Client("12312312315",
+            Employee update = new Employee("12312312315",
                      "José Silva",
                      "Rua das Flores",
-                     "123451231");
+                     "123456531");
 
-            clientDao.updateClient(update);
+            employeeDao.updateEmployee(update);
 
             String cpf = "43185649168";
 
-            clientDao.deleteClient(cpf);
+            employeeDao.deleteEmployee(cpf);
     }
 }
