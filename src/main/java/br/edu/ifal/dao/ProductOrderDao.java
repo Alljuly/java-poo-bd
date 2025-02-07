@@ -42,13 +42,13 @@ public class ProductOrderDao {
         return productOrders;
     }
 
-    public ProductOrder getOrderById(String id){
+    public ProductOrder getOrderById(int id){
         String sql = "SELECT * FROM ITEM_PEDIDO o WHERE o.id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, id);
+            pst.setInt(1, id);
 
             ResultSet rs = pst.executeQuery();
             
@@ -96,17 +96,16 @@ public class ProductOrderDao {
     }
     
     public int updateOrder(ProductOrder productOrder){
-        String sql = "UPDATE ITEM_PEDIDO SET ID = ?, ID_PEDIDO_FK = ?, ID_PRODUTO_FK = ?, QUANTIDADE = ?, VALOR = ? WHERE ID = ?;";
+        String sql = "UPDATE ITEM_PEDIDO SET ID_PEDIDO_FK = ?, ID_PRODUTO_FK = ?, QUANTIDADE = ?, VALOR = ? WHERE ID = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setLong(1, productOrder.getId());
-            pst.setLong(2, productOrder.getOrderId());
-            pst.setLong(3, productOrder.getProductId());
-            pst.setInt(4, productOrder.getQuantity());
-            pst.setObject(5, productOrder.getValue());
-            pst.setLong(6, productOrder.getId());
+            pst.setInt(1, productOrder.getOrderId());
+            pst.setInt(2, productOrder.getProductId());
+            pst.setInt(3, productOrder.getQuantity());
+            pst.setObject(4, productOrder.getValue());
+            pst.setInt(5, productOrder.getId());
 
            int res =  pst.executeUpdate();
 
@@ -121,13 +120,13 @@ public class ProductOrderDao {
 
     }
     
-    public int deleteOrder(String id){
+    public int deleteOrder(int id){
         String sql = "Delete from ITEM_PEDIDO WHERE id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, id);
+            pst.setInt(1, id);
             int res = pst.executeUpdate();
 
             pst.close();

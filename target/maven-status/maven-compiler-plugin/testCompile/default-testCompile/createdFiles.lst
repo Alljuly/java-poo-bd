@@ -1,0 +1,5 @@
+br\edu\ifal\test\TestClientDao.class
+br\edu\ifal\test\TestProductDao.class
+br\edu\ifal\test\TestEmployeeDao.class
+br\edu\ifal\test\TestOrderDao.class
+br\edu\ifal\test\TestProductOrderDao.class

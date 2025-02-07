@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-public class TestEmployee{
+public class TestEmployeeDao {
     private EmployeeDao employeeDao;
 
     @BeforeEach

@@ -1,16 +1,13 @@
 package br.edu.ifal.test;
 
 import br.edu.ifal.dao.ProductDao;
-import br.edu.ifal.domain.Order;
 import br.edu.ifal.domain.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
-
-public class TestProduct{
+public class TestProductDao {
     ProductDao productDao;
 
     @BeforeEach
@@ -33,6 +30,20 @@ public class TestProduct{
     }
 
     @Test
+    public void testUpdateProduct(){
+        int id = 17;
+        Product product = productDao.getProductById(id);
+        if(product != null){
+            Product newProduct = new Product(id,"SMARTPHONE SAMSUNG S22 128GB", 3999, 46);
+            int res = productDao.updateProduct(newProduct);
+            System.out.println("Uma linha afetada");
+            assertEquals(1, res);
+        } else {
+            System.out.println("Nenhum resultado para esse id");
+        }
+    }
+
+    @Test
     public void testDeleteProduct(){
         int id = 17;
 
@@ -51,17 +62,4 @@ public class TestProduct{
         }
     }
 
-    @Test
-    public void testUpdateProduct(){
-        int id = 17;
-        Product product = productDao.getProductById(id);
-        if(product != null){
-            Product newProduct = new Product(id,"SMARTPHONE SAMSUNG S22 128GB", 3999, 46);
-            int res = productDao.updateProduct(newProduct);
-            System.out.println("Uma linha afetada");
-            assertEquals(1, res);
-        } else {
-            System.out.println("Nenhum resultado para esse id");
-        }
-    }
 }

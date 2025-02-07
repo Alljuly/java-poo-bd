@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestOrder{
+public class TestOrderDao {
     OrderDao orderDao;
 
     @BeforeEach
@@ -16,7 +16,7 @@ public class TestOrder{
 
    @Test
     public void testAddNewOrder() {
-        Order newOrder = new Order("12312312315", "12365897412", 1256);
+        Order newOrder = new Order("04881132105", "12365897412", 1256);
 
         int resID = orderDao.addOrder(newOrder);
         Order o = orderDao.getOrderById(resID);
@@ -32,7 +32,6 @@ public class TestOrder{
         int res = orderDao.deleteOrder(id);
        if(order != null){
           assertEquals(1, res);
-          System.out.println("Uma linha afetada");
           Order deleteOrder = orderDao.getOrderById(id);
           assertNull(deleteOrder);
        }
@@ -48,7 +47,7 @@ public class TestOrder{
         int id = 7;
         Order order = orderDao.getOrderById(id);
        if(order != null){
-           Order newOrder = new Order(id,"12312312315", "12365897412", 265);
+           Order newOrder = new Order(id,"04881132105", "24080075693", 265);
            int res = orderDao.updateOrder(newOrder);
            System.out.println("Uma linha afetada");
            assertEquals(1, res);
