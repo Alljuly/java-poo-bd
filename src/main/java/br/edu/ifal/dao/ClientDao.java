@@ -141,7 +141,7 @@ public class ClientDao {
             stmt.setString(1, cpf);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1) > 0; // Se o contador for maior que 0, o CPF já existe
+                return rs.getInt(1) > 0;
             }
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);

@@ -1,7 +1,6 @@
 package br.edu.ifal.test;
 
 import br.edu.ifal.dao.EmployeeDao;
-import br.edu.ifal.domain.Client;
 import br.edu.ifal.domain.Employee;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
