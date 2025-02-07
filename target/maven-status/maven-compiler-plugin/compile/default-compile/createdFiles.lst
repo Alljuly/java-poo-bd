@@ -1,0 +1,12 @@
+br\edu\ifal\dao\ProductOrderDao.class
+br\edu\ifal\Main.class
+br\edu\ifal\dao\EmployeeDao.class
+br\edu\ifal\domain\ProductOrder.class
+br\edu\ifal\dao\OrderDao.class
+br\edu\ifal\domain\Employee.class
+br\edu\ifal\domain\Product.class
+br\edu\ifal\domain\Order.class
+br\edu\ifal\db\ConnectionHelper.class
+br\edu\ifal\dao\ClientDao.class
+br\edu\ifal\domain\Client.class
+br\edu\ifal\dao\ProductDao.class

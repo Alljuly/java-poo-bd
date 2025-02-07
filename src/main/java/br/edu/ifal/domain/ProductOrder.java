@@ -1,3 +1,5 @@
+package br.edu.ifal.domain;
+
 public class ProductOrder{
     private int id;
     private int orderId;
@@ -13,6 +15,12 @@ public class ProductOrder{
         this.value = value;
     }
 
+    public ProductOrder(int orderId, int productId, int quantity, double value) {
+        this.orderId = orderId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.value = value;
+    }
     // Getters and Setters
     public int getId() {
         return id;

@@ -1,3 +1,5 @@
+package br.edu.ifal.domain;
+
 public class Product{
     private int id;
     private String name;
@@ -6,6 +8,12 @@ public class Product{
 
     public Product(int id, String name, double unitPrice, int quantity) {
         this.id = id;
+        this.name = name;
+        this.unitPrice = unitPrice;
+        this.quantity = quantity;
+    }
+
+    public Product(String name, double unitPrice, int quantity) {
         this.name = name;
         this.unitPrice = unitPrice;
         this.quantity = quantity;

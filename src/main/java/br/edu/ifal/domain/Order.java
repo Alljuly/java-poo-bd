@@ -1,3 +1,5 @@
+package br.edu.ifal.domain;
+
 public class Order{
     private int id;
     private String clientCpf;
@@ -6,6 +8,12 @@ public class Order{
 
     public Order(int id, String clientCpf, String employeeCpf, double totalValue) {
         this.id = id;
+        this.clientCpf = clientCpf;
+        this.employeeCpf = employeeCpf;
+        this.totalValue = totalValue;
+    }
+
+    public Order(String clientCpf, String employeeCpf, double totalValue) {
         this.clientCpf = clientCpf;
         this.employeeCpf = employeeCpf;
         this.totalValue = totalValue;

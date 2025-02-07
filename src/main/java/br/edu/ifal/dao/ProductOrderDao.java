@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ProductOrderDao {
 
-    List<ProductOrder> getAllOrders(){
+    public List<ProductOrder> getAllOrders(){
         String sql = "SELECT * FROM ITEM_PEDIDO;";
 
         List<ProductOrder> productOrders = new ArrayList<>();
@@ -22,14 +22,14 @@ public class ProductOrderDao {
 
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                int ID = Int.ParseInt(rs.getString("ID"));
-                int ID_PEDIDO_FK = Int.ParseInt(rs.getString("ID_PEDIDO_FK"));
-                int ID_PRODUTO_FK = Int.ParseInt(rs.getString("ID_PRODUTO_FK"));
-                int QUANTIDADE = Int.ParseInt(rs.getString("QUANTIDADE"));
-                double VALOR = Double.ParseDouble(rs.getString("VALOR"));
+                int ID = Integer.parseInt(rs.getString("ID"));
+                int ID_PEDIDO_FK = Integer.parseInt(rs.getString("ID_PEDIDO_FK"));
+                int ID_PRODUTO_FK = Integer.parseInt(rs.getString("ID_PRODUTO_FK"));
+                int QUANTIDADE = Integer.parseInt(rs.getString("QUANTIDADE"));
+                double VALOR = Double.parseDouble(rs.getString("VALOR"));
 
                 ProductOrder ProductOrder = new ProductOrder(ID, ID_PEDIDO_FK, ID_PRODUTO_FK, QUANTIDADE, VALOR);
-                lista.add(ProductOrder);
+                productOrders.add(ProductOrder);
             }
 
             pst.close();
@@ -42,7 +42,7 @@ public class ProductOrderDao {
         return productOrders;
     }
 
-    ProductOrder getOrderById(String id){
+    public ProductOrder getOrderById(String id){
         String sql = "SELECT * FROM ITEM_PEDIDO o WHERE o.id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
@@ -54,11 +54,11 @@ public class ProductOrderDao {
             
             if(rs.next()){
                 return new ProductOrder(
-                    Int.ParseInt(rs.getString("ID")),
-                    Int.ParseInt(rs.getString("ID_PEDIDO_FK")),
-                    Int.ParseInt(rs.getString("ID_PRODUTO_FK")),
-                    Int.ParseInt(rs.getString("QUANTIDADE")),
-                    Double.ParseDouble(rs.getString("VALOR"))
+                    Integer.parseInt(rs.getString("ID")),
+                    Integer.parseInt(rs.getString("ID_PEDIDO_FK")),
+                    Integer.parseInt(rs.getString("ID_PRODUTO_FK")),
+                    Integer.parseInt(rs.getString("QUANTIDADE")),
+                    Double.parseDouble(rs.getString("VALOR"))
             );
             }
             pst.close();
@@ -70,44 +70,50 @@ public class ProductOrderDao {
         return null;
     }
 
-    void addOrder(ProductOrder productOrder){
-         String sql = "INSERT INTO ITEM_PEDIDO VALUES (?,?,?,?);";
+    public int addProductOrder(ProductOrder productOrder){
+         String sql = "INSERT INTO ITEM_PEDIDO (ID_PEDIDO_FK, ID_PRODUTO_FK, QUANTIDADE, VALOR) VALUES (?,?,?,?);";
 
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, productOrder.getID());
-            pst.setString(2, productOrder.getCPFEmployee());
-            pst.setString(3, productOrder.getCPFClient());
-            pst.setString(4, productOrder.getValue());
+            pst.setInt(1, productOrder.getOrderId());
+            pst.setInt(2, productOrder.getProductId());
+            pst.setInt(3, productOrder.getQuantity());
+            pst.setObject(4, productOrder.getValue());
 
-            pst.execute();
+
+            int res = pst.executeUpdate();
 
             pst.close();
             connection.close();
+
+            return res;
 
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
     
-    int updateOrder(ProductOrder productOrder){
-        String sql = "UPDATE ITEM_PEDIDO SET ID = ?, ID_PEDIDO_FK = ?, ID_PRODUTO_FK = ?, QUANTIDADE = ?, VALOR = ? WHERE CPF = ?;";
+    public int updateOrder(ProductOrder productOrder){
+        String sql = "UPDATE ITEM_PEDIDO SET ID = ?, ID_PEDIDO_FK = ?, ID_PRODUTO_FK = ?, QUANTIDADE = ?, VALOR = ? WHERE ID = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, productOrder.getCpf());
-            pst.setString(2, productOrder.getNome());
-            pst.setString(3, productOrder.getEndereco());
-            pst.setString(4, productOrder.getTelefone());
-            pst.setString(5, productOrder.getCpf());
+            pst.setLong(1, productOrder.getId());
+            pst.setLong(2, productOrder.getOrderId());
+            pst.setLong(3, productOrder.getProductId());
+            pst.setInt(4, productOrder.getQuantity());
+            pst.setObject(5, productOrder.getValue());
+            pst.setLong(6, productOrder.getId());
 
-           return pst.executeUpdate();
+           int res =  pst.executeUpdate();
 
             pst.close();
             connection.close();
+
+            return res;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -115,17 +121,19 @@ public class ProductOrderDao {
 
     }
     
-    int deleteOrder(String id){
+    public int deleteOrder(String id){
         String sql = "Delete from ITEM_PEDIDO WHERE id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
             pst.setString(1, id);
-            return pst.executeUpdate();
+            int res = pst.executeUpdate();
 
             pst.close();
             connection.close();
+
+            return res;
 
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);

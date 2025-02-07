@@ -12,7 +12,7 @@ import java.util.List;
 
 public class EmployeeDao {
 
-    List<Employee> getAllEmployees(){
+    public List<Employee> getAllEmployees(){
         String sql = "SELECT * FROM Funcionario;";
 
         List<Employee> lista = new ArrayList<>();
@@ -33,15 +33,13 @@ public class EmployeeDao {
 
             pst.close();
             connection.close();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
         return lista;
     }
 
-    Employee getEmployeeById(String id){
+    public Employee getEmployeeById(String id){
         String sql = "SELECT * FROM Funcionario f WHERE f.cpf = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
@@ -68,7 +66,7 @@ public class EmployeeDao {
         return null;
     }
 
-    void addEmployee(Employee employee){
+    public void addEmployee(Employee employee){
          String sql = "INSERT INTO Funcionario VALUES (?,?,?,?);";
 
         try {
@@ -90,7 +88,7 @@ public class EmployeeDao {
         }
     }
     
-    int updateEmployee(Employee employee){
+    public int updateEmployee(Employee employee){
         String sql = "UPDATE Funcionario SET CPF = ?, NOME = ?, ENDERECO = ?, TELEFONE = ? WHERE CPF = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
@@ -102,10 +100,11 @@ public class EmployeeDao {
             pst.setString(4, employee.getContact());
             pst.setString(5, employee.getCpf());
 
-           return pst.executeUpdate();
+            int res = pst.executeUpdate();
 
             pst.close();
             connection.close();
+            return res;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -113,18 +112,18 @@ public class EmployeeDao {
 
     }
     
-    int deleteEmployee(String id){
+    public int deleteEmployee(String id){
         String sql = "Delete from Funcionario WHERE CPF = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
             pst.setString(1, id);
-            return pst.executeUpdate();
+            int res = pst.executeUpdate();
 
             pst.close();
             connection.close();
-
+            return res;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }

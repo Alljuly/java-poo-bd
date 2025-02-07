@@ -25,8 +25,8 @@ public class Client {
         return name;
     }
 
-    public void setName(String Name) {
-        this.Name = Name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getAddress() {
@@ -37,11 +37,11 @@ public class Client {
         this.address = address;
     }
 
-    public String getcontact() {
+    public String getContact() {
         return contact;
     }
 
-    public void setcontact(String contact) {
+    public void setContact(String contact) {
         this.contact = contact;
     }
 

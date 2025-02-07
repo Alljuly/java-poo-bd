@@ -10,10 +10,12 @@ public class ConnectionHelper {
         final String driver = "com.mysql.cj.jdbc.Driver";
         final String url = "jdbc:mysql://localhost/LOJA";
 
-        final String user = "root";
-        final String password = "12345678";
+        final String user = "admin";
+        final String password = "123456789";
 
         Class.forName(driver);
         return DriverManager.getConnection(url, user, password);
     }
+
+    
 }

@@ -1,8 +1,5 @@
 package br.edu.ifal.dao;
 
-import br.edu.ifal.db.ConnectionHelper;
-import br.edu.ifal.domain.Client;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,10 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.edu.ifal.db.ConnectionHelper;
+import br.edu.ifal.domain.Client;
+
 public class ClientDao {
 
-    List<Client> getAllClients(){
-        String sql = "SELECT * FROM Client;";
+    public List<Client> getAllClients(){
+        String sql = "SELECT * FROM Cliente;";
 
         List<Client> lista = new ArrayList<>();
         try {
@@ -33,16 +33,14 @@ public class ClientDao {
 
             pst.close();
             connection.close();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
         return lista;
     }
 
-    Client getClientById(String id){
-        String sql = "SELECT * FROM Client c WHERE c.cpf = ?;";
+    public Client getClientById(String id){
+        String sql = "SELECT * FROM Cliente c WHERE c.cpf = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
@@ -68,10 +66,11 @@ public class ClientDao {
         return null;
     }
 
-    void addClient(Client client){
-         String sql = "INSERT INTO Client VALUES (?,?,?,?);";
-
+    public void addClient(Client client) throws SQLException {
+         String sql = "INSERT INTO Cliente VALUES (?,?,?,?);";
+        if(!isCpfExistente(client.getCpf())){
         try {
+
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
@@ -87,11 +86,11 @@ public class ClientDao {
 
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
-        }
+        }}
     }
     
-    int updateClient(Client client){
-        String sql = "UPDATE Client SET CPF = ?, NOME = ?, ENDERECO = ?, TELEFONE = ? WHERE CPF = ?;";
+    public int updateClient(Client client){
+        String sql = "UPDATE Cliente SET CPF = ?, NOME = ?, ENDERECO = ?, TELEFONE = ? WHERE CPF = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
@@ -102,10 +101,12 @@ public class ClientDao {
             pst.setString(4, client.getContact());
             pst.setString(5, client.getCpf());
 
-           return pst.executeUpdate();
+           int res = pst.executeUpdate();
 
             pst.close();
             connection.close();
+
+            return res;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -113,21 +114,38 @@ public class ClientDao {
 
     }
     
-    int deleteClient(String id){
-        String sql = "Delete from Client WHERE CPF = ?;";
+    public int deleteClient(String id){
+        String sql = "Delete from Cliente WHERE CPF = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
             pst.setString(1, id);
-            return pst.executeUpdate();
+            int res = pst.executeUpdate();
 
             pst.close();
             connection.close();
+
+            return res;
 
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public boolean isCpfExistente(String cpf) throws SQLException {
+        String query = "SELECT COUNT(*) FROM cliente WHERE cpf = ?";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, cpf);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Se o contador for maior que 0, o CPF já existe
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 }

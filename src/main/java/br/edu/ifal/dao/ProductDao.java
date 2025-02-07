@@ -10,27 +10,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
- public class ProductDao {
-    
- List<Product> getAllOrders(){
-    String sql = "SELECT * FROM Produto;";
-    
-    List<Product> products = new ArrayList<>();
-    try {
+public class ProductDao {
+
+    public List<Product> getAllProducts() {
+        String sql = "SELECT * FROM Produto;";
+
+        List<Product> products = new ArrayList<>();
+        try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
-            
+
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                int ID         = rs.getString("ID");
-                String NOME       = rs.getString("NOME");
-                double VALOR_UNIT = rs.getString("VALOR_UNIT");
-                int QUANTIDADE = Double.ParseDouble(rs.getString("QUANTIDADE"));
-                
-                Product product = new Product(ID, NOME, VALOR_UNIT, QUANTIDADE);
+                int id = Integer.parseInt(rs.getString("ID"));
+                String nome = rs.getString("NOME");
+                double valorUnit = Double.parseDouble(rs.getString("VALOR_UNIT"));
+                int quantidade = Integer.parseInt(rs.getString("QUANTIDADE"));
+
+                Product product = new Product(id, nome, valorUnit, quantidade);
                 products.add(product);
             }
-            
+
             pst.close();
             connection.close();
         } catch (ClassNotFoundException e) {
@@ -40,95 +40,116 @@ import java.util.List;
         }
         return products;
     }
-    
-    Order getProductById(String id){
+
+    public Product getProductById(int id){
         String sql = "SELECT * FROM Produto p WHERE p.id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
             
-            pst.setString(1, id);
+            pst.setInt(1, id);
             
             ResultSet rs = pst.executeQuery();
             
             if(rs.next()){
-                return new Product(
-                    rs.getString("ID"),
-                    rs.getString("NOME"),
-                    rs.getString("VALOR_UNIT"),
-                    rs.getString("QUANTIDADE")
+
+                int ID = Integer.parseInt(rs.getString("ID"));
+                String nome = rs.getString("NOME");
+                double valorUnit = Double.parseDouble(rs.getString("VALOR_UNIT"));
+                int quantidade = Integer.parseInt(rs.getString("QUANTIDADE"));
+
+              
+
+                Product p = new Product(
+                    ID,
+                    nome,
+                    valorUnit,
+                    quantidade
                     );
+
+                pst.close();
+                connection.close();
+
+                return p;
             }
-            pst.close();
-            connection.close();
+          
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
         
         return null;
     }
-    
-    void addProduct(Product product){
-         String sql = "INSERT INTO Produto VALUES (?,?,?,?);";
+
+    public int addProduct(Product product) {
+        String sql = "INSERT INTO Produto (NOME, VALOR_UNIT, QUANTIDADE) VALUES (?,?,?);";
 
         try {
             Connection connection = ConnectionHelper.getConnection();
-            PreparedStatement pst = connection.prepareStatement(sql);
-            
-            pst.setString(1, product.getID());
-            pst.setString(2, product.getCPFEmployee());
-            pst.setString(3, product.getCPFClient());
-            pst.setString(4, product.getValue());
-            
+            PreparedStatement pst = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+
+            pst.setString(1, product.getName());
+            pst.setObject(2, product.getUnitPrice());
+            pst.setLong(3, product.getQuantity());
+
             pst.execute();
-            
+
+            ResultSet rs = pst.getGeneratedKeys();
+            int id =-1;
+            if(rs.next()){
+                id = rs.getInt(1);
+            }
+
+            rs.close();
             pst.close();
             connection.close();
+            return id;
 
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    
-    int updateProduct(Product product){
+
+    public int updateProduct(Product product) {
         String sql = "UPDATE Produto SET ID = ?, NOME = ?, VALOR_UNIT = ?, QUANTIDADE = ? WHERE ID = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
-            
-            pst.setString(1, product.getID());
-            pst.setString(2, product.getCPFEmployee());
-            pst.setString(3, product.getCPFClient());
-            pst.setString(4, product.getValue());
-            pst.setString(5, product.getID());
-            
-            return pst.executeUpdate();
-            
+
+            pst.setLong(1, product.getId());
+            pst.setString(2, product.getName());
+            pst.setObject(3, product.getUnitPrice());
+            pst.setLong(4, product.getQuantity());
+            pst.setLong(5, product.getId());
+
+            int res = pst.executeUpdate();
+
             pst.close();
             connection.close();
+
+            return res;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
 
-        
     }
-    
-    int deleteProduct(String id){
+
+    public int deleteProduct(int id) {
         String sql = "Delete from Produto WHERE id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
-            
-            pst.setString(1, id);
-            return pst.executeUpdate();
-            
+
+            pst.setInt(1, id);
+            int res = pst.executeUpdate();
+
             pst.close();
             connection.close();
-            
+
+            return res;
+
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
-        
+
     }
 }
-
