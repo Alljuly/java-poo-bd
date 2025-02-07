@@ -1,6 +1,7 @@
 package br.edu.ifal.test;
 
 import br.edu.ifal.dao.EmployeeDao;
+import br.edu.ifal.domain.Client;
 import br.edu.ifal.domain.Employee;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,9 +26,10 @@ public class TestEmployeeDao {
                 "Endereco",
                 "99999999999");
 
-        employeeDao.addEmployee(newEmployee);
+        assertDoesNotThrow(() -> employeeDao.addEmployee(newEmployee));
         List<Employee> listEmployees = employeeDao.getAllEmployees();
         assertTrue(listEmployees.stream().anyMatch(employee -> employee.getCpf().equals("12365897412")));
+
     }
 
     @Test
@@ -55,11 +57,21 @@ public class TestEmployeeDao {
     }
 
     @Test
-    public void testDeleteEmployee(){
-        String cpf = "12365897412";
+    public void testDeleteEmployee() throws SQLException {
+        String cpf = "56879845612";
+        Employee e = new Employee(cpf,
+                "José Silva",
+                "Rua das Flores",
+                "123456531");
 
-        int res = employeeDao.deleteEmployee(cpf);
-        assertTrue(res > 0);
+        employeeDao.addEmployee(e);
+
+        int deletedEmployee = employeeDao.deleteEmployee(cpf);
+        assertEquals(1,deletedEmployee);
+
+        Employee resID = employeeDao.getEmployeeById(cpf);
+        assertNull(resID);
+
 
     }
 }

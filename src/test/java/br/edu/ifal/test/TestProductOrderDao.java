@@ -32,7 +32,6 @@ public class TestProductOrderDao {
         if(p != null){
             ProductOrder update = new ProductOrder(id,4,6,8,4569631);
             int res = productOrderDao.updateOrder(update);
-            System.out.println(res + " Linha Afetada");
             assertEquals(1, res);
 
         }
@@ -50,7 +49,6 @@ public class TestProductOrderDao {
             assertNull(deleteProductOrder);
         }
         else {
-            System.out.println("Nenhuma linha afetada");
             assertEquals(0, res);
         }
     }

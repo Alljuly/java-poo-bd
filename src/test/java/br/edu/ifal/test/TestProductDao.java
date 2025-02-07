@@ -31,35 +31,25 @@ public class TestProductDao {
 
     @Test
     public void testUpdateProduct(){
-        int id = 17;
-        Product product = productDao.getProductById(id);
-        if(product != null){
-            Product newProduct = new Product(id,"SMARTPHONE SAMSUNG S22 128GB", 3999, 46);
-            int res = productDao.updateProduct(newProduct);
-            System.out.println("Uma linha afetada");
-            assertEquals(1, res);
-        } else {
-            System.out.println("Nenhum resultado para esse id");
-        }
+        Product newProduct = new Product("Smartphone Samsung S22 128gb", 3999, 63);
+
+        int resID = productDao.addProduct(newProduct);
+        Product update = new Product(resID,"SMARTPHONE SAMSUNG S22 128GB", 3999, 46);
+        int resUpdate = productDao.updateProduct(update);
+        assertEquals(1, resUpdate);
+
     }
 
     @Test
     public void testDeleteProduct(){
-        int id = 17;
+        Product newProduct = new Product("Smartphone Samsung S22 128gb", 3999, 63);
 
-        Product product = productDao.getProductById(id);
-        int res = productDao.deleteProduct(id);
+        int resID = productDao.addProduct(newProduct);
+        int res = productDao.deleteProduct(resID);
+        assertEquals(1, res);
+        Product deleteProduct = productDao.getProductById(resID);
+        assertNull(deleteProduct);
 
-        if(product != null){
-            assertEquals(1, res);
-            System.out.println("Uma linha afetada");
-            Product deleteProduct = productDao.getProductById(id);
-            assertNull(deleteProduct);
-        }
-        else {
-            System.out.println("Nenhuma linha afetada");
-            assertEquals(0, res);
-        }
     }
 
 }

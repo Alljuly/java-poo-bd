@@ -2,6 +2,7 @@ package br.edu.ifal.test;
 
 import br.edu.ifal.dao.ClientDao;
 import br.edu.ifal.domain.Client;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -36,9 +37,16 @@ public class TestClientDao {
    }
    @Test
    public void testDeleteClient() throws SQLException {
-       String cpf = "12312312315";
-       clientDao.deleteClient(cpf);
-       List<Client> listClients = clientDao.getAllClients();
+       String cpf = "56879845612";
+       Client e = new Client(cpf,
+               "José Silva",
+               "Rua das Flores",
+               "123456531");
 
-       assertFalse(listClients.stream().anyMatch(client -> client.getCpf().equals(cpf)));
+       clientDao.addClient(e);
+
+       int deletedClient = clientDao.deleteClient(cpf);
+       assertEquals(1,deletedClient);
+       Client resID = clientDao.getClientById(cpf);
+       assertNull(resID);
    }}

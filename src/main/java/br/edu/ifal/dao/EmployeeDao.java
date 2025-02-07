@@ -48,7 +48,7 @@ public class EmployeeDao {
             pst.setString(1, id);
 
             ResultSet rs = pst.executeQuery();
-            
+
             if(rs.next()){
                 return new Employee(
                     rs.getString("CPF"),
@@ -66,25 +66,27 @@ public class EmployeeDao {
         return null;
     }
 
-    public void addEmployee(Employee employee){
+    public void addEmployee(Employee employee) throws SQLException {
          String sql = "INSERT INTO Funcionario VALUES (?,?,?,?);";
 
-        try {
-            Connection connection = ConnectionHelper.getConnection();
-            PreparedStatement pst = connection.prepareStatement(sql);
+        if(!isCpfExistente(employee.getCpf())){
+            try {
+                Connection connection = ConnectionHelper.getConnection();
+                PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, employee.getCpf());
-            pst.setString(2, employee.getName());
-            pst.setString(3, employee.getAddress());
-            pst.setString(4, employee.getContact());
+                pst.setString(1, employee.getCpf());
+                pst.setString(2, employee.getName());
+                pst.setString(3, employee.getAddress());
+                pst.setString(4, employee.getContact());
 
-            pst.execute();
+                pst.execute();
 
-            pst.close();
-            connection.close();
+                pst.close();
+                connection.close();
 
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            } catch (ClassNotFoundException | SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
     
@@ -128,5 +130,20 @@ public class EmployeeDao {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public boolean isCpfExistente(String cpf) throws SQLException {
+        String query = "SELECT COUNT(*) FROM funcionario WHERE cpf = ?";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, cpf);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 }

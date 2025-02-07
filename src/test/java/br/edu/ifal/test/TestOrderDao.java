@@ -11,10 +11,10 @@ public class TestOrderDao {
 
     @BeforeEach
     public void setup(){
-       this.orderDao = new OrderDao();
+        this.orderDao = new OrderDao();
     }
 
-   @Test
+    @Test
     public void testAddNewOrder() {
         Order newOrder = new Order("04881132105", "12365897412", 1256);
 
@@ -23,36 +23,30 @@ public class TestOrderDao {
         assertTrue(orderDao.getAllOrders().stream().anyMatch(order -> {
             return order.getId() == o.getId();
         }));
-   }
+    }
 
-   @Test
+    @Test
     public void testDeleteOrder(){
-        int id = 5;
-        Order order = orderDao.getOrderById(id);
-        int res = orderDao.deleteOrder(id);
-       if(order != null){
-          assertEquals(1, res);
-          Order deleteOrder = orderDao.getOrderById(id);
-          assertNull(deleteOrder);
-       }
-       else {
-           System.out.println("Nenhuma linha afetada");
-           assertEquals(0, res);
-       }
+        Order newOrder = new Order("04881132105", "12365897412", 1256);
+        int res = orderDao.addOrder(newOrder);
+        int deletedOrder = orderDao.deleteOrder(res);
+        assertEquals(1, deletedOrder);
+        Order deleteOrder = orderDao.getOrderById(res);
+        assertNull(deleteOrder);
+    }
 
-   }
 
-   @Test
-    public void testUpdateOrder(){
-        int id = 7;
-        Order order = orderDao.getOrderById(id);
-       if(order != null){
-           Order newOrder = new Order(id,"04881132105", "24080075693", 265);
-           int res = orderDao.updateOrder(newOrder);
-           System.out.println("Uma linha afetada");
-           assertEquals(1, res);
-       } else {
-           System.out.println("Nenhum resultado para esse id");
-       }
-   }
+@Test
+public void testUpdateOrder(){
+    Order newOrder = new Order("04881132105", "12365897412", 1256);
+    int resID = orderDao.addOrder(newOrder);
+    Order order = orderDao.getOrderById(resID);
+    if(order != null){
+        Order update = new Order(resID,"04881132105", "24080075693", 265);
+        int res = orderDao.updateOrder(update);
+        assertEquals(1, res);
+    } else {
+        System.out.println("Nenhum resultado para esse id");
+    }
+}
 }
