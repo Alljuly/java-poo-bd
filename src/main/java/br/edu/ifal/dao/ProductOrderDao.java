@@ -117,7 +117,7 @@ public class ProductOrderDao {
         }
     }
     
-    public int updateOrder(ProductOrder productOrder){
+    public int updateProductOrder(ProductOrder productOrder){
         String sql = "UPDATE ITEM_PEDIDO SET ID_PEDIDO_FK = ?, ID_PRODUTO_FK = ?, QUANTIDADE = ?, VALOR = ? WHERE ID = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
@@ -142,7 +142,7 @@ public class ProductOrderDao {
 
     }
 
-    public int deleteOrder(int id){
+    public int deleteProductOrder(int id){
         String sql = "Delete from ITEM_PEDIDO WHERE id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
@@ -162,16 +162,16 @@ public class ProductOrderDao {
 
     }
 
-    public boolean hasProductInProductOrder() {
+    public boolean hasProductInProductOrder(int id) {
         String query = "SELECT COUNT(*) FROM Item_Pedido WHERE ID_PRODUTO_FK = ?";
         try (Connection conn = ConnectionHelper.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, id);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
         return false;}

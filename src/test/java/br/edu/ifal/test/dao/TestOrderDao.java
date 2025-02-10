@@ -1,4 +1,4 @@
-package br.edu.ifal.test;
+package br.edu.ifal.test.dao;
 
 import br.edu.ifal.dao.OrderDao;
 import br.edu.ifal.domain.Order;
@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestOrderDao {
-    OrderDao orderDao;
+    private OrderDao orderDao;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         this.orderDao = new OrderDao();
     }
 
@@ -18,35 +18,43 @@ public class TestOrderDao {
     public void testAddNewOrder() {
         Order newOrder = new Order("04881132105", "12365897412", 1256);
 
-        int resID = orderDao.addOrder(newOrder);
-        Order o = orderDao.getOrderById(resID);
-        assertTrue(orderDao.getAllOrders().stream().anyMatch(order -> {
-            return order.getId() == o.getId();
-        }));
+        int generatedId = orderDao.addOrder(newOrder);
+        Order orderFromDb = orderDao.getOrderById(generatedId);
+
+        assertNotNull(orderFromDb);
+        assertEquals(newOrder.getClientCpf(), orderFromDb.getClientCpf());
+        assertEquals(newOrder.getEmployeeCpf(), orderFromDb.getEmployeeCpf());
+        assertEquals(newOrder.getTotalValue(), orderFromDb.getTotalValue());
     }
 
     @Test
-    public void testDeleteOrder(){
+    public void testDeleteOrder() {
         Order newOrder = new Order("04881132105", "12365897412", 1256);
-        int res = orderDao.addOrder(newOrder);
-        int deletedOrder = orderDao.deleteOrder(res);
-        assertEquals(1, deletedOrder);
-        Order deleteOrder = orderDao.getOrderById(res);
-        assertNull(deleteOrder);
+        int orderId = orderDao.addOrder(newOrder);
+
+        int deleteResult = orderDao.deleteOrder(orderId);
+
+        assertEquals(1, deleteResult);
+        Order deletedOrder = orderDao.getOrderById(orderId);
+        assertNull(deletedOrder);
     }
 
+    @Test
+    public void testUpdateOrder() {
+        Order newOrder = new Order("04881132105", "12365897412", 1256);
+        int orderId = orderDao.addOrder(newOrder);
+        Order orderFromDb = orderDao.getOrderById(orderId);
 
-@Test
-public void testUpdateOrder(){
-    Order newOrder = new Order("04881132105", "12365897412", 1256);
-    int resID = orderDao.addOrder(newOrder);
-    Order order = orderDao.getOrderById(resID);
-    if(order != null){
-        Order update = new Order(resID,"04881132105", "24080075693", 265);
-        int res = orderDao.updateOrder(update);
-        assertEquals(1, res);
-    } else {
-        System.out.println("Nenhum resultado para esse id");
+        if (orderFromDb != null) {
+            Order updatedOrder = new Order(orderId, "04881132105", "24080075693", 265);
+            int updateResult = orderDao.updateOrder(updatedOrder);
+
+            assertEquals(1, updateResult);
+            Order updatedOrderFromDb = orderDao.getOrderById(orderId);
+            assertNotNull(updatedOrderFromDb);
+            assertEquals(updatedOrder.getTotalValue(), updatedOrderFromDb.getTotalValue());
+        } else {
+            fail("Order not found for update.");
+        }
     }
-}
 }

@@ -7,7 +7,6 @@ import java.util.List;
 
 public class ProductService {
     private ProductDao productDao = new ProductDao();
-
     public ProductService() {}
 
     public String addNewProduct(Product product) {
@@ -42,6 +41,8 @@ public class ProductService {
         if (id <= 0) {
             return "ID inválido. Verifique e tente novamente.";
         }
+        ProductOrderService productOrderService = new ProductOrderService();
+
 
         try {
             if (!productDao.productExists(id)) {
@@ -60,8 +61,17 @@ public class ProductService {
             return "Erro interno ao processar requisição.";
         }
     }
-    
 
+    public boolean productExists(int id) {
+
+            try {
+                return productDao.productExists(id);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+
+            }
+    }
     public Product getProduct(int id) {
         if (id <= 0) {
             throw new IllegalArgumentException("ID inválido. Verifique e tente novamente.");

@@ -66,10 +66,10 @@ public class EmployeeDao {
         return null;
     }
 
-    public void addEmployee(Employee employee) throws SQLException {
+    public boolean addEmployee(Employee employee) throws SQLException {
          String sql = "INSERT INTO Funcionario VALUES (?,?,?,?);";
 
-        if(!isCpfExistente(employee.getCpf())){
+        if(!isCpfExisting(employee.getCpf())){
             try {
                 Connection connection = ConnectionHelper.getConnection();
                 PreparedStatement pst = connection.prepareStatement(sql);
@@ -83,11 +83,13 @@ public class EmployeeDao {
 
                 pst.close();
                 connection.close();
+                return true;
 
             } catch (ClassNotFoundException | SQLException e) {
                 throw new RuntimeException(e);
             }
         }
+        return false;
     }
     
     public int updateEmployee(Employee employee){
@@ -114,13 +116,13 @@ public class EmployeeDao {
 
     }
     
-    public int deleteEmployee(String id){
+    public int deleteEmployee(String cpf){
         String sql = "Delete from Funcionario WHERE CPF = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setInt(1, id);
+            pst.setString(1, cpf);
             int res = pst.executeUpdate();
 
             pst.close();

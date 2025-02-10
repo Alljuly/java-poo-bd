@@ -1,56 +1,58 @@
-package br.edu.ifal.test;
+package br.edu.ifal.test.dao;
 
 import br.edu.ifal.dao.ProductOrderDao;
-import static org.junit.jupiter.api.Assertions.*;
-
 import br.edu.ifal.domain.ProductOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestProductOrderDao {
-    ProductOrderDao productOrderDao;
+    private ProductOrderDao productOrderDao;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         productOrderDao = new ProductOrderDao();
     }
 
     @Test
-    public void testAddProductOrder(){
-        ProductOrder newProductOrder = new ProductOrder(3,5,2, 7398);
+    public void testAddProductOrder() {
+        ProductOrder newProductOrder = new ProductOrder(3, 5, 2, 7398);
 
         int res = productOrderDao.addProductOrder(newProductOrder);
+
+        assertTrue(res > 0);
     }
 
     @Test
-    public void testUpdateProductOrder(){
+    public void testUpdateProductOrder() {
         int id = 16;
+        ProductOrder existingOrder = productOrderDao.getProductOrderById(id);
 
-        ProductOrder p = productOrderDao.getOrderById(id);
+        if (existingOrder != null) {
+            ProductOrder updatedOrder = new ProductOrder(id, 4, 6, 8, 4569631);
 
-        if(p != null){
-            ProductOrder update = new ProductOrder(id,4,6,8,4569631);
-            int res = productOrderDao.updateOrder(update);
+            // Act
+            int res = productOrderDao.updateProductOrder(updatedOrder);
+
+            // Assert
             assertEquals(1, res);
-
         }
     }
 
     @Test
-    public void testDeleteProductOrder(){
-        int id = 17;
+    public void testDeleteProductOrder() {
+        int id = 19;
+        ProductOrder existingOrder = productOrderDao.getProductOrderById(id);
 
-        ProductOrder p = productOrderDao.getOrderById(id);
-        int res = 0;
-        if(p != null){
-            res = productOrderDao.deleteOrder(id);
-            ProductOrder deleteProductOrder = productOrderDao.getOrderById(id);
-            assertNull(deleteProductOrder);
-        }
-        else {
-            assertEquals(0, res);
+        if (existingOrder != null) {
+            int res = productOrderDao.deleteProductOrder(id);
+
+            assertEquals(1, res);
+            ProductOrder deletedOrder = productOrderDao.getProductOrderById(id);
+            assertNull(deletedOrder);
+        } else {
+            assertEquals(0, 0);
         }
     }
-
 }

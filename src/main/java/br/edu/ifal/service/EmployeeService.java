@@ -2,93 +2,106 @@ package br.edu.ifal.service;
 
 import br.edu.ifal.dao.EmployeeDao;
 import br.edu.ifal.domain.Employee;
-import br.edu.ifal.service.OrderService;
+
+import java.sql.SQLException;
 
 
 public class EmployeeService{
     public EmployeeDao employeeDao = new EmployeeDao();
-    private OrderService orderService = new OrderService();
+
 
     public EmployeeService(){
 
     }
 
-    public String addNewEmployee(Employee c){
-        if(c.getCpf().isEmpty() || c.getName().isEmpty() || c.getContact().isEmpty()){
-            return "Todos os campos obrigatórios precisam ser preenchidos";
-        }
-            try {
-                if(employeeExists(c.getCpf())){
-                        return "CPF Já Cadastrado";
-                }
-                boolean res = employeeDao.addEmployee(c);
-                return res ? "Funcionario adicionado" : "Não foi possível adicionar esse funcionario, verifique sua conexão e tente novamente mais tarde";
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "Erro interno ao processar requisição";
-            }
-    }
-
-    public String updateEmployee(Employee c){
-        if(c.getCpf().isEmpty() || c.getName().isEmpty() || c.getContact().isEmpty()){
-            return "Todos os campos obrigatórios precisam ser preenchidos";
+    public String addNewEmployee(Employee employee) {
+        String validationResponse = validateEmployeeFields(employee);
+        if (!validationResponse.isEmpty()) {
+            return validationResponse;
         }
 
         try {
-            if(!employeeExists(c.getCpf())){
-                return "CPF não encontrado";
+            if (doesEmployeeExists(employee.getCpf())) {
+                return "CPF já cadastrado.";
             }
-            int res = employeeDao.updateEmployee(c);
 
-            return (res == 1) ? "Funcionario atualizado com sucesso." : "Algo deu errado, tente novamente.";
-            
+            boolean isAdded = employeeDao.addEmployee(employee);
+            return isAdded ? "Funcionário adicionado com sucesso." : "Não foi possível adicionar o funcionário, verifique a conexão e tente novamente mais tarde.";
         } catch (Exception e) {
             e.printStackTrace();
-            return "Erro interno ao processar requisição";
+            return "Erro interno ao processar requisição.";
         }
     }
 
-    public boolean employeeExists(String cpf){
-        if(!cpf.isEmpty()){
-            return employeeDao.isCpfExisting(cpf);
-        }
-        throw new IllegalArgumentException("CPF inválido. Verifique e tente novamente.");
-    }
-
-    public String deleteEmployee(String cpf){
-        if(cpf.isEmpty() || !employeeExists(cpf)){
-            return "Verifique o CPF novamente";
+    public String updateEmployee(Employee employee) {
+        String validationResponse = validateEmployeeFields(employee);
+        if (!validationResponse.isEmpty()) {
+            return validationResponse;
         }
 
-       try {
-            if(!orderService.hasOrdersForEmployee(cpf)){
-                Employee delete = employeeDao.getEmployeeById(cpf);
-
-                if(delete instanceof Employee){
-                    int res = employeeDao.deleteEmployee(cpf);
-                    return res == 1 ? "Funcionario " + delete.toString() + " removido." : "Algo deu errado, tente novamente.";
-                }
-                return "Algo deu errado, tente novamente";
+        try {
+            if (!doesEmployeeExists(employee.getCpf())) {
+                return "CPF não encontrado.";
             }
-            return "Não foi possível apagar esse funcionário pois existem pedidos associados.";
-       } catch (Exception e) {
-        e.printStackTrace();
-        return "Erro interno ao processar requisição";
-       }
 
+            int result = employeeDao.updateEmployee(employee);
+            return result == 1 ? "Funcionário atualizado com sucesso." : "Algo deu errado, tente novamente.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erro interno ao processar requisição.";
+        }
     }
 
-    public Employee getEmployee(String cpf){
-        if(cpf.isEmpty() || !employeeExists(cpf)){
+    public String deleteEmployee(String cpf) {
+        OrderService orderService = new OrderService();
+        try {
+            if (cpf.isEmpty() || !doesEmployeeExists(cpf)) {
+                return "Verifique o CPF novamente.";
+            }
+            if (orderService.hasOrdersForEmployee(cpf)) {
+                return "Não foi possível apagar o funcionário, pois há pedidos associados.";
+            }
+
+            Employee employeeToDelete = employeeDao.getEmployeeById(cpf);
+            if (employeeToDelete != null) {
+                int result = employeeDao.deleteEmployee(cpf);
+                return result == 1 ? "Funcionário " + employeeToDelete.toString() + " removido com sucesso." : "Algo deu errado, tente novamente.";
+            }
+            return "Algo deu errado, tente novamente.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erro interno ao processar requisição.";
+        }
+    }
+
+    public Employee getEmployee(String cpf) throws SQLException {
+        if (cpf.isEmpty() || !doesEmployeeExists(cpf)) {
             throw new IllegalArgumentException("CPF inválido. Verifique e tente novamente.");
         }
-        try {
-            Employee res = employeeDao.getEmployeeById(cpf);
-            return res;
 
+        try {
+            return employeeDao.getEmployeeById(cpf);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public boolean doesEmployeeExists(String cpf) {
+        if (!cpf.isEmpty()) {
+            try {
+                return employeeDao.isCpfExisting(cpf);
+            } catch (SQLException e) {
+                throw new RuntimeException("Erro ao verificar se o CPF existe: " + e.getMessage());
+            }
+        }
+        throw new IllegalArgumentException("CPF inválido. Verifique e tente novamente.");
+    }
+
+    private String validateEmployeeFields(Employee employee) {
+        if (employee.getCpf().isEmpty() || employee.getName().isEmpty() || employee.getContact().isEmpty()) {
+            return "Todos os campos obrigatórios precisam ser preenchidos.";
+        }
+        return "";
     }
 }

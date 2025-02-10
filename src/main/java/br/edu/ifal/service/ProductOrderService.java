@@ -11,7 +11,7 @@ import java.util.List;
 
 
 public class ProductOrderService{
-    public ProductOrderDao productOrderDao = new ProductOrderDao();
+    private ProductOrderDao productOrderDao = new ProductOrderDao();
     private OrderService orderService = new OrderService();
     private ProductService productService = new ProductService();
 
@@ -44,7 +44,7 @@ public class ProductOrderService{
             throw new IllegalArgumentException("ID inválido. Verifique e tente novamente.");
         }
         try {
-            return orderService.isOrderExists(id);
+            return orderService.orderExists(id);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -56,7 +56,7 @@ public class ProductOrderService{
             throw new IllegalArgumentException("ID inválido. Verifique e tente novamente.");
         }
         try {
-            return productService.isProductExists(id);
+            return productService.productExists(id);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -76,16 +76,14 @@ public class ProductOrderService{
         return null;
     }
 
-    public List<ProductOrder> getAllProductOrders(int id){
-        if(productOrderExistsForOrder(id)){
+    public List<ProductOrder> getAllProductOrders(){
             try {
-                ArrayList<ProductOrder> po = productOrderDao.getAllOrders(id);
+                List<ProductOrder> po = productOrderDao.getAllProductOrders();
                 return po;                
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
-        }
     }
 
     public String deleteProductOrder(int id) {
@@ -106,5 +104,13 @@ public class ProductOrderService{
         }
     }
 
+    public boolean hasProductOrdersForOrder(int id) {
+        List<ProductOrder> listPO = getAllProductOrders();
 
+        if (listPO.isEmpty()) {
+            return false;
+        }
+
+        return listPO.stream().anyMatch(productOrder -> productOrder.getOrderId() == id);
+    }
 }

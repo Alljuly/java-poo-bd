@@ -2,20 +2,14 @@ package br.edu.ifal.service;
 
 import br.edu.ifal.domain.Order;
 import br.edu.ifal.dao.OrderDao;
-import br.edu.ifal.service.Client;
-import br.edu.ifal.service.Employee;
-import br.edu.ifal.service.ProductOrderService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderService{
-    OrderDao orderDao = new OrderDao();
-    ClientService clientService = new ClientService();
-    EmployeeService employeeService = new EmployeeService();
-    ProductOrderService productOrderService = new ProductOrderService();
+    private final OrderDao orderDao = new OrderDao();
 
-    public OrderService(){
+    public OrderService() {
 
     }
 
@@ -27,15 +21,16 @@ public class OrderService{
     }
 
     public String addNewOrder(Order order){
-        if(order.getClientCpf().isEmpty || order.getEmployeeCpf().isEmpty() || (order.getTotalValue() <= 0)){
+        if(order.getClientCpf().isEmpty() || order.getEmployeeCpf().isEmpty() || (order.getTotalValue() <= 0)){
             return "Todos os campos obrigatórios precisam ser preenchidos";
         }
-
+        ClientService clientService = new ClientService();;
+        EmployeeService employeeService = new EmployeeService();
         try {
             String client = order.getClientCpf();
             String employee = order.getEmployeeCpf();
 
-            if(!employeeService.employeeExists(employee) || !clientService.clientExists(client)){
+            if(!employeeService.doesEmployeeExists(employee) || !clientService.doesClientExist(client)){
                 return "Verifique os dados do cliente e do funcionário";
             }
 
@@ -63,7 +58,7 @@ public class OrderService{
 
     public List<Order> getOrders(){
         try {
-            ArrayList<Order> orders = new ArrayList<>();
+            List<Order> orders = new ArrayList<>();
             orders = orderDao.getAllOrders();
             if(orders != null){
                 return orders;
@@ -94,20 +89,24 @@ public class OrderService{
 
     }
 
-    public String deleteOrder(int id){
-        if(id < 0){
-            return "Verifique as informações";
+    public String deleteOrder(int id) {
+        if (id < 0) {
+            return "Verifique as informações.";
         }
+        ProductOrderService productOrderService = new ProductOrderService();
+
         try {
-            if(!productOrderService.hasProductOrdersForOrder(id)){
-                Order deleted = getOrder(id);
-                if(deleted != null){
-                    int res = orderDao.deleteOrder(id);
-                    return res == 1 ? "Pedido nº " + deleted.toString() + "removido." : "Algo deu errado.";
-                }
+            if (productOrderService.hasProductOrdersForOrder(id)) {
+                return "Pedido não pode ser apagado, pois possui itens associados.";
+            }
+
+            Order orderToDelete = getOrder(id);
+            if (orderToDelete == null) {
                 return "Pedido não localizado.";
             }
-            return "Pedido não pode ser apagado pois possue itens associados.";
+
+            int result = orderDao.deleteOrder(id);
+            return result == 1 ? "Pedido nº " + orderToDelete.toString() + " removido com sucesso." : "Algo deu errado.";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,13 +114,24 @@ public class OrderService{
         }
     }
 
-    public boolean isProductExists(int id){
+    public boolean hasOrdersForEmployee(String cpf){
         try{
-            return orderDao.productExistsForOrder(id);
+            return orderDao.hasOrdersForEmployee(cpf);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
         
+    }
+
+
+    public boolean hasOrdersForClient(String cpf){
+        try{
+        return orderDao.hasOrdersForClient(cpf);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 }

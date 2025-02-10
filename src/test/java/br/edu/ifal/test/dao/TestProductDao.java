@@ -1,4 +1,4 @@
-package br.edu.ifal.test;
+package br.edu.ifal.test.dao;
 
 import br.edu.ifal.dao.ProductDao;
 import br.edu.ifal.domain.Product;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestProductDao {
-    ProductDao productDao;
+    private ProductDao productDao;
 
     @BeforeEach
     public void setup() {
@@ -16,40 +16,43 @@ public class TestProductDao {
     }
 
     @Test
-    public void testAddProduct(){
+    public void testAddProduct() {
         Product newProduct = new Product("Smartphone Samsung S22 128gb", 3999, 63);
 
-        int resID = productDao.addProduct(newProduct);
+        int generatedId = productDao.addProduct(newProduct);
+        Product productFromDb = productDao.getProductById(generatedId);
 
-        Product product = productDao.getProductById(resID);
-
-        assertTrue(productDao.getAllProducts().stream().anyMatch(p -> {
-            return product.getId() == p.getId();
-        }));
-
+        assertNotNull(productFromDb);
+        assertEquals(newProduct.getName(), productFromDb.getName());
+        assertEquals(newProduct.getUnitPrice(), productFromDb.getUnitPrice());
+        assertEquals(newProduct.getQuantity(), productFromDb.getQuantity());
     }
 
     @Test
-    public void testUpdateProduct(){
+    public void testUpdateProduct() {
         Product newProduct = new Product("Smartphone Samsung S22 128gb", 3999, 63);
+        int generatedId = productDao.addProduct(newProduct);
 
-        int resID = productDao.addProduct(newProduct);
-        Product update = new Product(resID,"SMARTPHONE SAMSUNG S22 128GB", 3999, 46);
-        int resUpdate = productDao.updateProduct(update);
-        assertEquals(1, resUpdate);
+        Product updatedProduct = new Product(generatedId, "SMARTPHONE SAMSUNG S22 128GB", 3999, 46);
+        int updateResult = productDao.updateProduct(updatedProduct);
 
+        assertEquals(1, updateResult);
+        Product productFromDb = productDao.getProductById(generatedId);
+        assertNotNull(productFromDb);
+        assertEquals(updatedProduct.getName(), productFromDb.getName());
+        assertEquals(updatedProduct.getUnitPrice(), productFromDb.getUnitPrice());
+        assertEquals(updatedProduct.getQuantity(), productFromDb.getQuantity());
     }
 
     @Test
-    public void testDeleteProduct(){
+    public void testDeleteProduct() {
         Product newProduct = new Product("Smartphone Samsung S22 128gb", 3999, 63);
+        int generatedId = productDao.addProduct(newProduct);
 
-        int resID = productDao.addProduct(newProduct);
-        int res = productDao.deleteProduct(resID);
-        assertEquals(1, res);
-        Product deleteProduct = productDao.getProductById(resID);
-        assertNull(deleteProduct);
+        int deleteResult = productDao.deleteProduct(generatedId);
 
+        assertEquals(1, deleteResult);
+        Product deletedProduct = productDao.getProductById(generatedId);
+        assertNull(deletedProduct);
     }
-
 }

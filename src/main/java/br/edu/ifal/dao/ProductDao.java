@@ -152,4 +152,25 @@ public class ProductDao {
         }
 
     }
+
+    public boolean productExists(int id) {
+        String sql = "SELECT COUNT(*) FROM Produto WHERE id = ?;";
+
+        try {
+            Connection connection = ConnectionHelper.getConnection();
+            PreparedStatement pst = connection.prepareStatement(sql);
+
+            pst.setInt(1, id);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+            pst.close();
+            connection.close();
+            return false;
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

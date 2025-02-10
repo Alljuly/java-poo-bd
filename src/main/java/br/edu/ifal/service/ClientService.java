@@ -1,97 +1,114 @@
 package br.edu.ifal.service;
 
 import br.edu.ifal.dao.ClientDao;
-import br.edu.ifal.service.OrderService;
-
 import br.edu.ifal.domain.Client;
 
-public class ClientService{
-    public ClientDao clientDao = new ClientDao();
-    private OrderService orderService = new OrderService();
+import java.sql.SQLException;
 
-    public ClientService(){
+public class ClientService {
+    public static final String CPF_NOT_FOUND = "CPF não encontrado";
+    public static final String CPF_ALREADY_REGISTERED = "CPF Já Cadastrado";
+    public static final String MISSING_REQUIRED_FIELDS = "Todos os campos obrigatórios precisam ser preenchidos";
+    public static final String INVALID_CPF = "CPF inválido. Verifique e tente novamente.";
+    public static final String INTERNAL_ERROR = "Erro interno ao processar requisição";
+    public static final String ASSOCIATED_ORDERS_ERROR = "Não foi possível apagar esse cliente pois existem pedidos associados.";
 
+    private final ClientDao clientDao = new ClientDao();
+    private final OrderService orderService;
+
+    public ClientService() {
+        this.orderService = new OrderService();
     }
 
-       public boolean clientExists(String cpf){
-        if(!cpf.isEmpty()){
-            return clientDao.isCpfExisting(cpf);
-        }
-        throw new IllegalArgumentException("CPF inválido. Verifique e tente novamente.");
+
+
+    public boolean doesClientExist(String cpf) throws SQLException {
+        validateCpf(cpf, INVALID_CPF);
+        return clientDao.isCpfExisting(cpf);
     }
 
-    public String addNewClient(Client c){
-        if(c.getCpf().isEmpty() || c.getName().isEmpty() || c.getContact().isEmpty()){
-            return "Todos os campos obrigatórios precisam ser preenchidos";
-        }
-            try {
-                if(clientExists(c.getCpf())){
-                        return "CPF Já Cadastrado";
-                }
-                boolean res = clientDao.addClient(c);
-                return res ? "Cliente adicionado" : "Não foi possível adicionar esse cliente, verifique sua conexão e tente novamente mais tarde";
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "Erro interno ao processar requisição";
-            }
-    }
-
-    public String updateClient(Client c){
-        if(c.getCpf().isEmpty() || c.getName().isEmpty() || c.getContact().isEmpty()){
-            return "Todos os campos obrigatórios precisam ser preenchidos";
+    public String addClient(Client client) {
+        if (isMissingRequiredFields(client)) {
+            return MISSING_REQUIRED_FIELDS;
         }
 
         try {
-            if(!clientExists(c.getCpf())){
-                return "CPF não encontrado";
+            if (doesClientExist(client.getCpf())) {
+                return CPF_ALREADY_REGISTERED;
             }
-            int res = clientDao.updateClient(c);
 
-            return (res == 1) ? "Cliente atualizado com sucesso." : "Algo deu errado, tente novamente.";
-            
+            boolean isAdded = clientDao.addClient(client);
+            return isAdded ? "Cliente adicionado com sucesso" : "Não foi possível adicionar esse cliente, verifique sua conexão.";
         } catch (Exception e) {
             e.printStackTrace();
-            return "Erro interno ao processar requisição";
+            return INTERNAL_ERROR;
         }
     }
 
-    public String deleteClient(String cpf){
-        if(cpf.isEmpty()){
-            return "Verifique o CPF novamente";
+    public String updateClient(Client client) {
+        if (isMissingRequiredFields(client)) {
+            return MISSING_REQUIRED_FIELDS;
         }
-        if (!clientExists(cpf)) {
-            return "CPF não encontrado";
-        }
-        
+
         try {
-            if(!orderDao.hasOrdersForClient(cpf)){ 
-                Client delete = clientDao.getClientById(cpf);
-                if(delete instanceof Client){
-                    int res = clientDao.deleteClient(cpf);
-                    return res == 1 ? "Cliente " + delete.toString() + " removido." : "Algo deu errado, tente novamente.";
-                }
-            return "Algo deu errado, tente novamente";
+            if (!doesClientExist(client.getCpf())) {
+                return CPF_NOT_FOUND;
             }
-            return "Não foi possível apagar esse cliente pois existem pedidos associados.";
+
+            int rowsUpdated = clientDao.updateClient(client);
+            return rowsUpdated == 1 ? "Cliente atualizado com sucesso." : "Algo deu errado, tente novamente.";
         } catch (Exception e) {
             e.printStackTrace();
-            return "Erro interno ao processar requisição";
-       }
-
+            return INTERNAL_ERROR;
+        }
     }
 
-    public Client getClient(String cpf){
+    public String deleteClient(String cpf) throws SQLException {
+        validateCpf(cpf, "Verifique o CPF novamente");
+
+        if (!doesClientExist(cpf)) {
+            return CPF_NOT_FOUND;
+        }
+
         try {
-            if(cpf.isEmpty() || !clientDao.isCpfExistente(cpf)){
-                throw new IllegalArgumentException("Verifique o CPF novamente");
+            if (!orderService.hasOrdersForClient(cpf)) {
+                Client clientToDelete = clientDao.getClientById(cpf);
+
+                if (clientToDelete != null) {
+                    int rowsDeleted = clientDao.deleteClient(cpf);
+                    return rowsDeleted == 1 ? "Cliente " + clientToDelete + " removido." : "Algo deu errado, tente novamente.";
+                }
+                return "Algo deu errado, tente novamente";
+            }
+            return ASSOCIATED_ORDERS_ERROR;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return INTERNAL_ERROR;
+        }
+    }
+
+    public Client getClient(String cpf) {
+        try {
+            validateCpf(cpf, "Verifique o CPF novamente");
+
+            if (!clientDao.isCpfExisting(cpf)) {
+                throw new IllegalArgumentException(CPF_NOT_FOUND);
             }
 
-            Client res = clientDao.getClientById(cpf);
-            return res;
-
+            return clientDao.getClientById(cpf);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private boolean isMissingRequiredFields(Client client) {
+        return client.getCpf().isEmpty() || client.getName().isEmpty() || client.getContact().isEmpty();
+    }
+
+    private void validateCpf(String cpf, String errorMessage) {
+        if (cpf == null || cpf.isEmpty()) {
+            throw new IllegalArgumentException(errorMessage);
         }
     }
 }

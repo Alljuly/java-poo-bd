@@ -1,4 +1,4 @@
-package br.edu.ifal.test;
+package br.edu.ifal.test.dao;
 
 import br.edu.ifal.dao.EmployeeDao;
 import br.edu.ifal.domain.Employee;
@@ -14,44 +14,45 @@ public class TestEmployeeDao {
 
     @BeforeEach
     public void setup() {
-
         this.employeeDao = new EmployeeDao();
     }
 
     @Test
-    public void testAddEmployee() throws SQLException{
+    public void testAddEmployee() throws SQLException {
         Employee newEmployee = new Employee("12365897412",
                 "Emanuel Vilela",
                 "Endereco",
                 "99999999999");
 
-        assertDoesNotThrow(() -> employeeDao.addEmployee(newEmployee));
-        List<Employee> listEmployees = employeeDao.getAllEmployees();
-        assertTrue(listEmployees.stream().anyMatch(employee -> employee.getCpf().equals("12365897412")));
-
-    }
-
-    @Test
-    public void testGetEmployee() throws  SQLException{
-        String cpf = "12365897412";
-
-        Employee res = employeeDao.getEmployeeById(cpf);
-        if(res != null){
-        assertEquals(res.getCpf(), cpf);
-        } else {
-            System.out.println("Funcionario não existe");
+        if(!employeeDao.isCpfExisting(newEmployee.getCpf())){
+            boolean added = employeeDao.addEmployee(newEmployee);
+            assertTrue(added);
         }
+        else {
+            boolean added = employeeDao.addEmployee(newEmployee);
+            assertFalse(added);
+        }
+        assertTrue(employeeDao.isCpfExisting("12365897412"));
+    }
+
+
+    @Test
+    public void testGetEmployee() throws SQLException {
+        String cpf = "12365897412";
+        Employee res = employeeDao.getEmployeeById(cpf);
+
+        assertNotNull(res, "Funcionário não encontrado!");
+        assertEquals(res.getCpf(), cpf);
     }
 
     @Test
-    public void testUpdateEmployee(){
+    public void testUpdateEmployee() {
         Employee update = new Employee("12365897412",
-                   "José Silva",
-                   "Rua das Flores",
-                   "123456531");
+                "José Silva",
+                "Rua das Flores",
+                "123456531");
         int res = employeeDao.updateEmployee(update);
 
-        System.out.println(res);
         assertTrue(res > 0);
     }
 
@@ -64,13 +65,9 @@ public class TestEmployeeDao {
                 "123456531");
 
         employeeDao.addEmployee(e);
-
         int deletedEmployee = employeeDao.deleteEmployee(cpf);
-        assertEquals(1,deletedEmployee);
 
-        Employee resID = employeeDao.getEmployeeById(cpf);
-        assertNull(resID);
-
-
+        assertEquals(1, deletedEmployee);
+        assertNull(employeeDao.getEmployeeById(cpf));
     }
 }

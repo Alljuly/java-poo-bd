@@ -181,18 +181,19 @@ public class OrderDao {
     }
 
     public boolean isOrderExists(int id){
-        String query = "SELECT COUNT(*) FROM PEDIDO WHERE id = ?";
+        String sql = "SELECT COUNT(*) FROM PEDIDO WHERE id = ?";
         try (Connection conn = ConnectionHelper.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
         return false;
     }
+
 
 }
