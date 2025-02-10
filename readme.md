@@ -6,9 +6,20 @@ Este é um projeto Java para gerenciar uma loja, com funcionalidades para cadast
 
 O banco de dados contém as seguintes tabelas:
 
-- **CLIENTE**: Armazena as informações dos clientes (CPF, nome, endereço, telefone).
-- **FUNCIONARIO**: Armazena as informações dos funcionários (CPF, nome, endereço, telefone).
-- **PRODUTO**: Armazena as informações dos produtos (nome, valor unitário, quantidade).
+- **CLIENTE**: Armazena as informações dos clientes.
+    - CPF;
+    - Nome;
+    - Endereço;
+    - Telefone.
+- **FUNCIONARIO**: Armazena as informações dos funcionários.
+    - CPF;
+    - Nome;
+    - Endereço;
+    - Telefone.
+- **PRODUTO**: Armazena as informações dos produtos
+    - Nome;
+    - Valor unitário;
+    - Quantidade;
 - **PEDIDO**: Armazena os pedidos feitos pelos clientes, incluindo referências aos clientes e funcionários.
 - **ITEM_PEDIDO**: Armazena os itens de cada pedido, relacionando os produtos com os pedidos.
 
