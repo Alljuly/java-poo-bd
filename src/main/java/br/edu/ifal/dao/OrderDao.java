@@ -39,6 +39,50 @@ public class OrderDao {
         return orders;
     }
 
+    public boolean hasOrdersForEmployee(String cpf){
+        String sql = "SELECT * FROM ITEM_PEDIDO o WHERE o.CPF_FUNCIONARIO_FK = ?;";
+        try {
+            Connection connection = ConnectionHelper.getConnection();
+            PreparedStatement pst = connection.prepareStatement(sql);
+
+            pst.setString(1, cpf);
+
+            ResultSet rs = pst.executeQuery();
+            boolean exists = rs.next();
+            
+            rs.close();
+            pst.close();
+            connection.close();
+            
+            return exists;
+        
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException("Erro ao verificar pedidos associados ao funcionário.", e);
+        }
+    }
+
+    public boolean hasOrdersForClient(String cpf){
+        String sql = "SELECT * FROM ITEM_PEDIDO o WHERE o.CPF_CLIENTE_FK = ?;";
+        try {
+            Connection connection = ConnectionHelper.getConnection();
+            PreparedStatement pst = connection.prepareStatement(sql);
+
+            pst.setString(1, cpf);
+
+            ResultSet rs = pst.executeQuery();
+            boolean exists = rs.next();
+            
+            rs.close();
+            pst.close();
+            connection.close();
+            
+            return exists;
+        
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException("Erro ao verificar pedidos associados ao cliente.", e);
+        }
+    }
+
     public Order getOrderById(int id){
         String sql = "SELECT * FROM Pedido p WHERE p.id = ?;";
         try {
@@ -134,7 +178,21 @@ public class OrderDao {
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public boolean isOrderExists(int id){
+        String query = "SELECT COUNT(*) FROM PEDIDO WHERE id = ?";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
 }

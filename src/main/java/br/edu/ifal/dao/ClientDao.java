@@ -66,9 +66,9 @@ public class ClientDao {
         return null;
     }
 
-    public void addClient(Client client) throws SQLException {
+    public boolean addClient(Client client) throws SQLException {
          String sql = "INSERT INTO Cliente VALUES (?,?,?,?);";
-        if(!isCpfExistente(client.getCpf())){
+        
         try {
 
             Connection connection = ConnectionHelper.getConnection();
@@ -83,23 +83,22 @@ public class ClientDao {
 
             pst.close();
             connection.close();
-
+            return true;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
-        }}
+        }
     }
     
     public int updateClient(Client client){
-        String sql = "UPDATE Cliente SET CPF = ?, NOME = ?, ENDERECO = ?, TELEFONE = ? WHERE CPF = ?;";
+        String sql = "UPDATE Cliente SET NOME = ?, ENDERECO = ?, TELEFONE = ? WHERE CPF = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, client.getCpf());
-            pst.setString(2, client.getName());
-            pst.setString(3, client.getAddress());
-            pst.setString(4, client.getContact());
-            pst.setString(5, client.getCpf());
+            pst.setString(1, client.getName());
+            pst.setString(2, client.getAddress());
+            pst.setString(3, client.getContact());
+            pst.setString(4, client.getCpf());
 
            int res = pst.executeUpdate();
 
@@ -134,7 +133,7 @@ public class ClientDao {
 
     }
 
-    public boolean isCpfExistente(String cpf) throws SQLException {
+    public boolean isCpfExisting(String cpf) throws SQLException {
         String query = "SELECT COUNT(*) FROM cliente WHERE cpf = ?";
         try (Connection conn = ConnectionHelper.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {

@@ -120,7 +120,7 @@ public class EmployeeDao {
             Connection connection = ConnectionHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql);
 
-            pst.setString(1, id);
+            pst.setInt(1, id);
             int res = pst.executeUpdate();
 
             pst.close();
@@ -132,7 +132,7 @@ public class EmployeeDao {
 
     }
 
-    public boolean isCpfExistente(String cpf) throws SQLException {
+    public boolean isCpfExisting(String cpf) throws SQLException {
         String query = "SELECT COUNT(*) FROM funcionario WHERE cpf = ?";
         try (Connection conn = ConnectionHelper.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {

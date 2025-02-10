@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ProductOrderDao {
 
-    public List<ProductOrder> getAllOrders(){
+    public List<ProductOrder> getAllProductOrders(){
         String sql = "SELECT * FROM ITEM_PEDIDO;";
 
         List<ProductOrder> productOrders = new ArrayList<>();
@@ -22,11 +22,11 @@ public class ProductOrderDao {
 
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                int ID = Integer.parseInt(rs.getString("ID"));
-                int ID_PEDIDO_FK = Integer.parseInt(rs.getString("ID_PEDIDO_FK"));
-                int ID_PRODUTO_FK = Integer.parseInt(rs.getString("ID_PRODUTO_FK"));
-                int QUANTIDADE = Integer.parseInt(rs.getString("QUANTIDADE"));
-                double VALOR = Double.parseDouble(rs.getString("VALOR"));
+                int ID = rs.getInt("ID");
+                int ID_PEDIDO_FK = rs.getInt("ID_PEDIDO_FK");
+                int ID_PRODUTO_FK = rs.getInt("ID_PRODUTO_FK");
+                int QUANTIDADE = rs.getInt("QUANTIDADE");
+                double VALOR = rs.getDouble("VALOR");
 
                 ProductOrder ProductOrder = new ProductOrder(ID, ID_PEDIDO_FK, ID_PRODUTO_FK, QUANTIDADE, VALOR);
                 productOrders.add(ProductOrder);
@@ -42,7 +42,7 @@ public class ProductOrderDao {
         return productOrders;
     }
 
-    public ProductOrder getOrderById(int id){
+    public ProductOrder getProductOrderById(int id){
         String sql = "SELECT * FROM ITEM_PEDIDO o WHERE o.id = ?;";
         try {
             Connection connection = ConnectionHelper.getConnection();
@@ -54,11 +54,11 @@ public class ProductOrderDao {
             
             if(rs.next()){
                 return new ProductOrder(
-                    Integer.parseInt(rs.getString("ID")),
-                    Integer.parseInt(rs.getString("ID_PEDIDO_FK")),
-                    Integer.parseInt(rs.getString("ID_PRODUTO_FK")),
-                    Integer.parseInt(rs.getString("QUANTIDADE")),
-                    Double.parseDouble(rs.getString("VALOR"))
+                    rs.getInt("ID"),
+                    rs.getInt("ID_PEDIDO_FK"),
+                    rs.getInt("ID_PRODUTO_FK"),
+                    rs.getInt("QUANTIDADE"),
+                    rs.getDouble("VALOR")
             );
             }
             pst.close();
@@ -68,6 +68,28 @@ public class ProductOrderDao {
         }
 
         return null;
+    }
+
+    public boolean hasProductOrdersForOrder(int id){
+        String sql = "SELECT * FROM ITEM_PEDIDO i WHERE i.ID_PEDIDO_FK = ?;";
+        try {
+            Connection connection = ConnectionHelper.getConnection();
+            PreparedStatement pst = connection.prepareStatement(sql);
+
+            pst.setInt(1, id);
+
+            ResultSet rs = pst.executeQuery();
+            boolean exists = rs.next();
+            
+            rs.close();
+            pst.close();
+            connection.close();
+            
+            return exists;
+        
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException("Erro ao verificar pedidos associados ao item.", e);
+        }
     }
 
     public int addProductOrder(ProductOrder productOrder){
@@ -80,7 +102,7 @@ public class ProductOrderDao {
             pst.setInt(1, productOrder.getOrderId());
             pst.setInt(2, productOrder.getProductId());
             pst.setInt(3, productOrder.getQuantity());
-            pst.setObject(4, productOrder.getValue());
+            pst.setDouble(4, productOrder.getValue());
 
 
             int res = pst.executeUpdate();
@@ -104,7 +126,7 @@ public class ProductOrderDao {
             pst.setInt(1, productOrder.getOrderId());
             pst.setInt(2, productOrder.getProductId());
             pst.setInt(3, productOrder.getQuantity());
-            pst.setObject(4, productOrder.getValue());
+            pst.setDouble(4, productOrder.getValue());
             pst.setInt(5, productOrder.getId());
 
            int res =  pst.executeUpdate();
@@ -119,7 +141,7 @@ public class ProductOrderDao {
 
 
     }
-    
+
     public int deleteOrder(int id){
         String sql = "Delete from ITEM_PEDIDO WHERE id = ?;";
         try {
@@ -139,4 +161,19 @@ public class ProductOrderDao {
         }
 
     }
+
+    public boolean hasProductInProductOrder() {
+        String query = "SELECT COUNT(*) FROM Item_Pedido WHERE ID_PRODUTO_FK = ?";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return false;}
+
 }
