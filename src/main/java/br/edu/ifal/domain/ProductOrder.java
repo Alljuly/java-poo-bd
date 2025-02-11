@@ -1,5 +1,7 @@
 package br.edu.ifal.domain;
 
+import br.edu.ifal.service.ProductService;
+
 public class ProductOrder{
     private int id;
     private int orderId;
@@ -7,15 +9,23 @@ public class ProductOrder{
     private int quantity;
     private double value;
 
-    public ProductOrder(int id, int orderId, int productId, int quantity, double value) {
-        this.id = id;
+    public ProductOrder( int orderId, int productId, int quantity) {
+        this.orderId = orderId;
+        this.productId = productId;
+        this.quantity = quantity;
+        ProductService productService = new ProductService();
+        this.value = productService.getValue(productId) * quantity;
+    }
+
+    public ProductOrder(int orderId, int productId, int quantity, double value) {
         this.orderId = orderId;
         this.productId = productId;
         this.quantity = quantity;
         this.value = value;
     }
 
-    public ProductOrder(int orderId, int productId, int quantity, double value) {
+    public ProductOrder(int id, int orderId, int productId, int quantity, double value) {
+        this.id = id;
         this.orderId = orderId;
         this.productId = productId;
         this.quantity = quantity;

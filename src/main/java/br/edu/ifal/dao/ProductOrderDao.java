@@ -28,7 +28,7 @@ public class ProductOrderDao {
                 int QUANTIDADE = rs.getInt("QUANTIDADE");
                 double VALOR = rs.getDouble("VALOR");
 
-                ProductOrder ProductOrder = new ProductOrder(ID, ID_PEDIDO_FK, ID_PRODUTO_FK, QUANTIDADE, VALOR);
+                ProductOrder ProductOrder = new ProductOrder(ID_PEDIDO_FK, ID_PRODUTO_FK, QUANTIDADE, VALOR);
                 productOrders.add(ProductOrder);
             }
 

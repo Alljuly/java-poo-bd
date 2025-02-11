@@ -22,10 +22,10 @@ public class OrderDao {
 
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                int id = Integer.parseInt(rs.getString("ID"));
+                int id = rs.getInt("ID");
                 String cpf_client = rs.getString("CPF_CLIENTE_FK");
                 String cpf_employee = rs.getString("CPF_FUNCIONARIO_FK");
-                double value = Double.parseDouble(rs.getString("VALOR_TOTAL"));
+                double value = rs.getDouble("VALOR_TOTAL");
 
                 Order Order = new Order(id, cpf_client, cpf_employee, value);
                 orders.add(Order);

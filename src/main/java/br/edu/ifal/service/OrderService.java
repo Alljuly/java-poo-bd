@@ -20,9 +20,10 @@ public class OrderService{
         throw new IllegalArgumentException("ID inválido. Verifique e tente novamente.");
     }
 
-    public String addNewOrder(Order order){
+    public int addNewOrder(Order order){
         if(order.getClientCpf().isEmpty() || order.getEmployeeCpf().isEmpty() || (order.getTotalValue() <= 0)){
-            return "Todos os campos obrigatórios precisam ser preenchidos";
+            System.out.println("Todos os campos obrigatórios precisam ser preenchidos");
+            return -1;
         }
         ClientService clientService = new ClientService();;
         EmployeeService employeeService = new EmployeeService();
@@ -31,15 +32,17 @@ public class OrderService{
             String employee = order.getEmployeeCpf();
 
             if(!employeeService.doesEmployeeExists(employee) || !clientService.doesClientExist(client)){
-                return "Verifique os dados do cliente e do funcionário";
+                System.out.println("Verifique os dados do cliente e do funcionário");
+                return -1;
             }
 
             int res = orderDao.addOrder(order);
-            return (res != -1) ? "Pedido nº " + res + " adicionado." : "Algo deu errado, tente novamente em alguns minutos.";
-
+            System.out.println((res != -1) ? "Pedido nº " + res + " adicionado." : "Algo deu errado, tente novamente em alguns minutos.");
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
-            return "Falha interna ao processar requisição";
+             System.out.println("Falha interna ao processar requisição");
+             return -1;
         }
     }
 
@@ -56,14 +59,10 @@ public class OrderService{
         }
     }
 
-    public List<Order> getOrders(){
+    public List<Order> getAllOrders(){
         try {
-            List<Order> orders = new ArrayList<>();
-            orders = orderDao.getAllOrders();
-            if(orders != null){
-                return orders;
-            }
-            return null;
+
+            return orderDao.getAllOrders();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

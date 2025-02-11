@@ -52,4 +52,13 @@ public class Product{
         this.quantity = quantity;
     }
 
+    public String toString(){
+        return "Produto {" +
+                "id:" + id +
+                ", nome: '" + name + '\'' +
+                ", preço: " + unitPrice +
+                ", quantidade em estoque: " + quantity +
+                '}';
+    }
+
 }

@@ -94,4 +94,17 @@ public class ProductService {
         }
     }
 
+    public double getValue(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID inválido. Verifique e tente novamente.");
+        }
+
+        try {
+            Product product = productDao.getProductById(id);
+            return product.getUnitPrice();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }

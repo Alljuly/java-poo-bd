@@ -1,7 +1,9 @@
 package br.edu.ifal.domain;
 
+import br.edu.ifal.service.ProductService;
+
 public class Order{
-    private int id;
+    private int id = 0;
     private String clientCpf;
     private String employeeCpf;
     private double totalValue;
@@ -13,14 +15,16 @@ public class Order{
         this.totalValue = totalValue;
     }
 
-    public Order(String clientCpf, String employeeCpf, double totalValue) {
-        this.clientCpf = clientCpf;
-        this.employeeCpf = employeeCpf;
-        this.totalValue = totalValue;
+    public Order(String cliente, String vendedor, int idProdutoVenda, int quantity) {
+        this.clientCpf = cliente;
+        this.employeeCpf = vendedor;
+        ProductService productService = new ProductService();
+        this.totalValue = productService.getValue(idProdutoVenda) * quantity;
     }
 
+
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(int id) {
@@ -49,5 +53,15 @@ public class Order{
 
     public void setTotalValue(double totalValue) {
         this.totalValue = totalValue;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", cliente=" + clientCpf +
+                ", vendedor=" + employeeCpf +
+                ", valor total=" + totalValue +
+                '}';
     }
 }
