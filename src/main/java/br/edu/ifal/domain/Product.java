@@ -53,10 +53,10 @@ public class Product{
     }
 
     public String toString(){
-        return "Produto {" +
-                "id:" + id +
+        return "Produto { " +
+                "id: " + id +
                 ", nome: '" + name + '\'' +
-                ", preço: " + unitPrice +
+                ", preço unitário: " + unitPrice +
                 ", quantidade em estoque: " + quantity +
                 '}';
     }

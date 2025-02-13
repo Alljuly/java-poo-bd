@@ -1,5 +1,10 @@
-D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\TestClientDao.java
-D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\TestOrderDao.java
-D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\TestProductDao.java
-D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\TestProductOrderDao.java
-D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\TestEmployeeDao.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\dao\TestProductOrderDao.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\dao\TestEmployeeDao.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\dao\TestOrderDao.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\service\TestEmployeeService.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\service\TestOrderService.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\service\TestProductOrderService.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\service\TestClientService.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\dao\TestClientDao.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\service\TestProductService.java
+D:\Meus projetos\java-poo-bd\src\test\java\br\edu\ifal\test\dao\TestProductDao.java

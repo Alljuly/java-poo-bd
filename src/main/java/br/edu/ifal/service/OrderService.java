@@ -28,14 +28,6 @@ public class OrderService{
         ClientService clientService = new ClientService();;
         EmployeeService employeeService = new EmployeeService();
         try {
-            String client = order.getClientCpf();
-            String employee = order.getEmployeeCpf();
-
-            if(!employeeService.doesEmployeeExists(employee) || !clientService.doesClientExist(client)){
-                System.out.println("Verifique os dados do cliente e do funcionário");
-                return -1;
-            }
-
             int res = orderDao.addOrder(order);
             System.out.println((res != -1) ? "Pedido nº " + res + " adicionado." : "Algo deu errado, tente novamente em alguns minutos.");
             return res;

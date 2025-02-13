@@ -1,25 +1,21 @@
 package br.edu.ifal;
 
 
-import br.edu.ifal.domain.Client;
-import br.edu.ifal.domain.Order;
-import br.edu.ifal.domain.Product;
-import br.edu.ifal.domain.ProductOrder;
-import br.edu.ifal.service.ClientService;
-import br.edu.ifal.service.OrderService;
-import br.edu.ifal.service.ProductOrderService;
-import br.edu.ifal.service.ProductService;
+import br.edu.ifal.domain.*;
+import br.edu.ifal.service.*;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         Scanner e = new Scanner(System.in);
 
         ProductService productService = new ProductService();
         ClientService clientService = new ClientService();
         OrderService orderService = new OrderService();
+        EmployeeService employeeService = new EmployeeService();
         ProductOrderService productOrderService = new ProductOrderService();
         int option;
 
@@ -121,27 +117,45 @@ public class Main {
                         int quantidadeVendida = e.nextInt();
                         e.nextLine();
 
+                        if(clientService.doesClientExist(cliente) && employeeService.doesEmployeeExists(vendedor)){
+
+
                             if(quantidadeVendida <= productService.getProduct(idProdutoVenda).getQuantity()){
                                 Order order = new Order(cliente, vendedor, idProdutoVenda, quantidadeVendida);
+
                                 int orderCreated = orderService.addNewOrder(order);
-                                order.setId(orderCreated);
-                                ProductOrder po = new ProductOrder(orderCreated, idProdutoVenda, quantidadeVendida);
+                                if(orderCreated > -1) {
+                                    order.setId(orderCreated);
+                                    ProductOrder po = new ProductOrder(orderCreated, idProdutoVenda, quantidadeVendida);
 
-                                String itemPedidoRes = productOrderService.addNewProductOrder(po);
+                                    String dadosCliente = clientService.getClient(cliente).toString();
+                                    String dadosFunc = clientService.getClient(vendedor).toString();
+                                    System.out.println(dadosFunc);
+                                    System.out.println(dadosCliente);
+                                    System.out.println("Confirma dados do cliente e funcionário? (S/N)");
+                                    String confirma = e.nextLine();
+                                    if (!confirma.equalsIgnoreCase("s")) {
+                                        break;
+                                    }
 
-                                System.out.println(itemPedidoRes);
+                                    String itemPedidoRes = productOrderService.addNewProductOrder(po);
 
-                                Product updatedProduct = productService.getProduct(idProdutoVenda);
-                                updatedProduct.setQuantity(updatedProduct.getQuantity() - quantidadeVendida);
-                                productService.updateProduct(updatedProduct);
+                                    System.out.println(itemPedidoRes);
 
+                                    Product updatedProduct = productService.getProduct(idProdutoVenda);
+                                    updatedProduct.setQuantity(updatedProduct.getQuantity() - quantidadeVendida);
+                                    productService.updateProduct(updatedProduct);
+                                }
 
                         }
                             else {
                                 System.out.println("Quantidade insuficiente, aguarde estoque ser atualizado.");
                                 System.out.println("Disponivel:  " + productService.getProduct(idProdutoVenda).getQuantity() + "unidades desse produto.");
-
                             }
+
+                        }else {
+                            System.out.println("Verifique os dados do cliente e do funcionário");
+                        }
                     }
                     else{
                     System.out.println("Produto não existe, verifique a lista disponível na opção 4");
